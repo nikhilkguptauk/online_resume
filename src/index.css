@@ -1,0 +1,23 @@
+@import 'tailwindcss';
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #e5e5e5;
+  color: #111827;
+}
+
+.bg-mint {
+  background-color: #dbffcf !important;
+}
+
+@media print {
+  .resume-page-1 {
+    box-shadow: none !important;
+    margin-top: 0 !important;
+    page-break-after: always;
+    break-after: page;
+  }
+}
