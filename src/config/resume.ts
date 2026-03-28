@@ -2,7 +2,7 @@ export const heroData = {
   name: 'Nikhil K Gupta',
   title: 'Senior Automation Engineer',
   phone: '+44-7979 965 209',
-  email: 'nikhilgupta.myid@gmail.com',
+  email: 'contact@nikhilkgupta.uk',
   linkedInDisplay: 'www.linkedin.com/in/nikhilkgupta84',
   linkedInUrl: 'https://www.linkedin.com/in/nikhilkgupta84',
   websiteDisplay: 'NikhilKGupta.uk',
