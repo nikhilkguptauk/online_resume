@@ -1,5 +1,5 @@
 import SectionHeadingBar from './SectionHeadingBar'
-import { profileBullets } from '../config/resume'
+import { profileBullets, typography } from '../config/resume'
 
 interface ProfileSummaryProps {
   compact?: boolean
@@ -22,15 +22,15 @@ export default function ProfileSummary({ compact }: ProfileSummaryProps) {
       <SectionHeadingBar title="PROFILE SUMMARY" compact={compact} />
       <ul
         style={{
-          listStyleType: 'disc',
-          padding: compact ? '6px 20px 6px 36px' : '8px 24px 8px 42px',
-          fontSize: compact ? 'clamp(10px, 1.2vw, 13px)' : 'clamp(11px, 1.35vw, 14px)',
-          lineHeight: '1.5',
+          listStyleType: typography.listStyleType,
+          padding: typography.listPadding,
+          fontSize: compact ? typography.bodyFontSizeCompact : typography.bodyFontSize,
+          lineHeight: typography.bodyLineHeight,
           margin: 0,
         }}
       >
         {profileBullets.map((bullet, idx) => (
-          <li key={idx} style={{ marginBottom: compact ? '3px' : '5px' }}>
+          <li key={idx} style={{ marginBottom: typography.listItemSpacing }}>
             {renderBoldMarkup(bullet)}
           </li>
         ))}

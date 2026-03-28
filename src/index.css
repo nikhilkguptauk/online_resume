@@ -13,10 +13,49 @@ body {
   background-color: #dbffcf !important;
 }
 
+.resume-page {
+  min-height: 297mm;
+}
+
 @media print {
-  .resume-page-1 {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  body {
+    background-color: #ffffff !important;
+  }
+
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  .print-hide {
+    display: none !important;
+  }
+
+  .resume-zoom {
+    transform: none !important;
+  }
+
+  .resume-page {
+    background-color: #ffffff !important;
     box-shadow: none !important;
     margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    height: 297mm;
+    min-height: 297mm;
+  }
+
+  .resume-page:not(:last-child) {
     page-break-after: always;
     break-after: page;
   }

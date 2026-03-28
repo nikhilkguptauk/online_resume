@@ -6,7 +6,7 @@ interface HeroProps {
 }
 
 export default function Hero({ compact }: HeroProps) {
-  const { name, title, phone, email, linkedInDisplay, linkedInUrl, location } = heroData
+  const { name, title, phone, email, linkedInDisplay, linkedInUrl, websiteDisplay, websiteUrl, location } = heroData
 
   return (
     <div style={{ padding: compact ? '8px 8px 0 8px' : '12px 12px 0 12px' }}>
@@ -54,6 +54,17 @@ export default function Hero({ compact }: HeroProps) {
           >
             {title}
           </p>
+          <p
+            style={{
+              fontSize: compact ? 'clamp(9px, 1.2vw, 12px)' : 'clamp(10px, 1.3vw, 13px)',
+              color: '#1b2a3d',
+              marginTop: '2px',
+              marginBottom: 0,
+              letterSpacing: '0.02em',
+            }}
+          >
+            {location}
+          </p>
         </div>
 
         {/* Right column: contact info */}
@@ -81,7 +92,14 @@ export default function Hero({ compact }: HeroProps) {
           >
             {linkedInDisplay}
           </a>
-          <span>{location}</span>
+          <a
+            href={websiteUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: '#1e40af', textDecoration: 'underline' }}
+          >
+            {websiteUrl}
+          </a>
         </div>
       </div>
     </div>
