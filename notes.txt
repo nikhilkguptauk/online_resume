@@ -1,4 +1,4 @@
-worker logs : 
+worker logss : 
 npx wrangler tail online-resume --format pretty
 
 add secret  : 
