@@ -112,15 +112,44 @@ export default function ContactModal({ isOpen, toEmail, onClose }: ContactModalP
       }
     }, 12000)
 
+    const resolvePending = (token: string) => {
+      if (!turnstilePendingRef.current) return
+      turnstileTokenRef.current = token
+      turnstilePendingRef.current.resolve(token)
+      turnstilePendingRef.current = null
+    }
+
+    const rejectPending = (error: Error) => {
+      if (!turnstilePendingRef.current) return
+      turnstilePendingRef.current.reject(error)
+      turnstilePendingRef.current = null
+    }
+
     try {
-      turnstileTokenRef.current = null
-      turnstileApi.reset(turnstileWidgetIdRef.current)
-      await new Promise<void>((resolve) => window.setTimeout(resolve, 150))
-      try {
-        turnstileApi.execute(turnstileWidgetIdRef.current, { action: 'contact' })
-      } catch {
-        // If a challenge is already executing, wait for the callback token.
+      if (turnstileTokenRef.current) {
+        resolvePending(turnstileTokenRef.current)
+      } else {
+        turnstileTokenRef.current = null
+        turnstileApi.reset(turnstileWidgetIdRef.current)
+        await new Promise<void>((resolve) => window.setTimeout(resolve, 150))
+        try {
+          const result = turnstileApi.execute(turnstileWidgetIdRef.current, { action: 'contact' })
+          if (typeof result === 'string' && result) {
+            resolvePending(result)
+          } else if (result && typeof (result as Promise<string>).then === 'function') {
+            ;(result as Promise<string>)
+              .then((token) => {
+                if (token) resolvePending(token)
+              })
+              .catch((error) => {
+                rejectPending(error instanceof Error ? error : new Error('Turnstile execute failed'))
+              })
+          }
+        } catch (error) {
+          rejectPending(error instanceof Error ? error : new Error('Turnstile execute failed'))
+        }
       }
+
       const token = await tokenPromise
       return token
     } finally {
