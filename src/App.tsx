@@ -200,7 +200,7 @@ export default function App() {
             paddingBottom: '10px',
           }}
         >
-          <Hero compact onContact={() => setIsContactOpen(true)} />
+          <Hero compact />
           <ProfileSummary compact />
           <TechnologySkills compact />
 

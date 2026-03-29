@@ -3,10 +3,9 @@ import { heroData, typography } from '../config/resume'
 
 interface HeroProps {
   compact?: boolean
-  onContact?: () => void
 }
 
-export default function Hero({ compact, onContact }: HeroProps) {
+export default function Hero({ compact }: HeroProps) {
   const { name, title, phone, email, linkedInDisplay, linkedInUrl, websiteUrl, location } = heroData
 
   return (
@@ -88,23 +87,6 @@ export default function Hero({ compact, onContact }: HeroProps) {
         >
           <span>{phone}</span>
           <span>{email}</span>
-          {onContact && (
-            <button
-              type="button"
-              onClick={onContact}
-              style={{
-                background: 'none',
-                border: 'none',
-                padding: 0,
-                color: '#1e40af',
-                textDecoration: 'underline',
-                cursor: 'pointer',
-                font: 'inherit',
-              }}
-            >
-              Contact Me
-            </button>
-          )}
           <a
             href={linkedInUrl}
             target="_blank"
