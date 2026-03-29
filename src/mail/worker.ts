@@ -38,7 +38,7 @@ export default {
           body: JSON.stringify({
             from: 'Nikhil K Gupta <contact@nikhilkgupta.uk>',
             to,
-            subject: `New website message from ${from}`,
+            subject: `New Online Resume message from ${from}`,
             text: `From: ${from}\n\nMessage:\n${message}`,
             reply_to: from,
           }),

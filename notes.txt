@@ -1,2 +1,8 @@
 worker logs : 
 npx wrangler tail online-resume --format pretty
+
+add secret  : 
+npx wrangler secret put RESEND_API_KEY --name online-resume
+
+deploy from cmd : 
+npx wrangler deploy src/mail/worker.ts --assets dist --name online-resume --compatibility-date 2024-12-01
