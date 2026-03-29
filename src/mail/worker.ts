@@ -16,26 +16,14 @@ export default {
     const url = new URL(request.url)
 
     if (url.pathname === '/api/contact' && request.method === 'POST') {
-      console.log('Contact API request', request.method, url.pathname)
       try {
         const { from, message, turnstileToken } = await request.json()
         if (!from || !message || !turnstileToken) {
-          console.error('Contact API missing fields', {
-            hasFrom: !!from,
-            hasMessage: !!message,
-            hasTurnstileToken: !!turnstileToken,
-          })
           return new Response('Missing required fields', { status: 400 })
         }
 
         const to = env.CONTACT_TO_EMAIL || DEFAULT_TO
-        console.log('Contact API payload', {
-          from,
-          to,
-          messageLength: String(message).length,
-        })
         if (!env.TURNSTILE_SECRET_KEY) {
-          console.error('Turnstile secret missing')
           return new Response('Turnstile secret not configured', { status: 500 })
         }
 
@@ -48,7 +36,6 @@ export default {
           verifyBody.set('remoteip', remoteIp)
         }
 
-        console.log('Turnstile verify start')
         const verifyResponse = await fetch(
           'https://challenges.cloudflare.com/turnstile/v0/siteverify',
           {
@@ -62,12 +49,9 @@ export default {
           'error-codes'?: string[]
         }
         if (!verifyResult.success) {
-          console.error('Turnstile verify failed', verifyResult)
           return new Response('Turnstile verification failed', { status: 403 })
         }
-        console.log('Turnstile verify ok')
 
-        console.log('Resend request start')
         const response = await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: {
@@ -85,14 +69,11 @@ export default {
 
         if (!response.ok) {
           const errorText = await response.text()
-          console.error('Resend error', response.status, errorText)
           return new Response(errorText, { status: 500 })
         }
 
-        console.log('Resend ok', response.status)
         return new Response('OK', { status: 200 })
       } catch (error) {
-        console.error('Contact API error', error)
         return new Response('Invalid request', { status: 400 })
       }
     }

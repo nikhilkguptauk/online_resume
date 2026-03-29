@@ -84,7 +84,6 @@ export default function ContactModal({ isOpen, toEmail, onClose }: ContactModalP
     if (!hasTurnstileKey) {
       throw new Error('Missing Turnstile site key')
     }
-    console.log('Turnstile execute start')
     await ensureTurnstileScript()
     const turnstileApi = window.turnstile
     if (!turnstileApi || !turnstileWidgetIdRef.current) {
@@ -130,7 +129,6 @@ export default function ContactModal({ isOpen, toEmail, onClose }: ContactModalP
 
     try {
       const token = await tokenPromise
-      console.log('Turnstile token received', { length: token.length })
       return token
     } finally {
       window.clearTimeout(timeoutId)
@@ -152,7 +150,6 @@ export default function ContactModal({ isOpen, toEmail, onClose }: ContactModalP
             size: 'invisible',
             callback: (token) => {
               turnstileTokenRef.current = token
-              console.log('Turnstile callback token received', { length: token.length })
               if (turnstilePendingRef.current) {
                 turnstilePendingRef.current.resolve(token)
                 turnstilePendingRef.current = null
@@ -160,7 +157,6 @@ export default function ContactModal({ isOpen, toEmail, onClose }: ContactModalP
             },
             'error-callback': () => {
               turnstileTokenRef.current = null
-              console.error('Turnstile error callback')
               if (turnstilePendingRef.current) {
                 turnstilePendingRef.current.reject(new Error('Turnstile error'))
                 turnstilePendingRef.current = null
@@ -168,17 +164,15 @@ export default function ContactModal({ isOpen, toEmail, onClose }: ContactModalP
             },
             'expired-callback': () => {
               turnstileTokenRef.current = null
-              console.warn('Turnstile token expired')
               if (turnstilePendingRef.current) {
                 turnstilePendingRef.current.reject(new Error('Turnstile token expired'))
                 turnstilePendingRef.current = null
               }
             },
           })
-          console.log('Turnstile widget rendered')
         }
-      } catch (error) {
-        console.error('Turnstile load failed', error)
+      } catch {
+        // ignore load errors; surfaced during execute
       }
     }
 
@@ -209,8 +203,6 @@ export default function ContactModal({ isOpen, toEmail, onClose }: ContactModalP
     sendingRef.current = true
     setStatus('sending')
     setStatusText('Verifying...')
-    console.log('Contact send started', { to: toEmail })
-
     try {
       const turnstileToken = await getTurnstileToken()
       setStatusText('Sending...')
@@ -221,18 +213,14 @@ export default function ContactModal({ isOpen, toEmail, onClose }: ContactModalP
       })
 
       if (!response.ok) {
-        const errorText = await response.text()
-        console.error('Contact send failed', response.status, errorText)
         throw new Error('Failed to send')
       }
 
       setStatus('success')
-      setStatusText('Message sent!')
+      setStatusText('Message sent successfully')
       setFromError('')
-      console.log('Contact send succeeded')
-      setTimeout(handleClose, 800)
+      setTimeout(handleClose, 2000)
     } catch (error) {
-      console.error('Contact send error', error)
       setStatus('error')
       const message =
         error instanceof Error && error.message.toLowerCase().includes('turnstile')
@@ -310,7 +298,13 @@ export default function ContactModal({ isOpen, toEmail, onClose }: ContactModalP
         <div ref={turnstileContainerRef} style={{ height: 0 }} />
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: '12px', color: status === 'error' ? '#b91c1c' : '#047857' }}>
+          <span
+            style={{
+              fontSize: status === 'success' ? '16px' : '12px',
+              fontWeight: status === 'success' ? 700 : 400,
+              color: status === 'error' ? '#b91c1c' : '#047857',
+            }}
+          >
             {statusText}
           </span>
           <ContactSendButton onClick={handleSend} disabled={status === 'sending'} />
