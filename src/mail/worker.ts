@@ -49,6 +49,7 @@ export default {
           'error-codes'?: string[]
         }
         if (!verifyResult.success) {
+          console.error('Turnstile verify failed', verifyResult)
           return new Response('Turnstile verification failed', { status: 403 })
         }
 
@@ -69,11 +70,13 @@ export default {
 
         if (!response.ok) {
           const errorText = await response.text()
+          console.error('Resend error', response.status, errorText)
           return new Response(errorText, { status: 500 })
         }
 
         return new Response('OK', { status: 200 })
       } catch (error) {
+        console.error('Contact API error', error)
         return new Response('Invalid request', { status: 400 })
       }
     }

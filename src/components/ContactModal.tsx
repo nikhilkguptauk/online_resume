@@ -213,6 +213,8 @@ export default function ContactModal({ isOpen, toEmail, onClose }: ContactModalP
       })
 
       if (!response.ok) {
+        const errorText = await response.text()
+        console.error('Contact send failed', response.status, errorText)
         throw new Error('Failed to send')
       }
 
@@ -221,6 +223,7 @@ export default function ContactModal({ isOpen, toEmail, onClose }: ContactModalP
       setFromError('')
       setTimeout(handleClose, 2000)
     } catch (error) {
+      console.error('Contact send error', error)
       setStatus('error')
       const message =
         error instanceof Error && error.message.toLowerCase().includes('turnstile')
