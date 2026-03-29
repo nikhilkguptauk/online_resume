@@ -152,7 +152,10 @@ export default function ContactModal({ isOpen, toEmail, onClose }: ContactModalP
           >
             {statusText}
           </span>
-          <ContactSendButton onClick={handleSend} disabled={status === 'sending'} />
+          <ContactSendButton
+            onClick={handleSend}
+            disabled={status === 'sending' || status === 'success'}
+          />
         </div>
       </div>
     </div>
