@@ -1,5 +1,4 @@
 export const contactToEmail = 'contact@nikhilkgupta.uk'
-export const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY ?? ''
 
 export const heroData = {
   name: 'Nikhil K Gupta',

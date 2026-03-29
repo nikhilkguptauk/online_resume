@@ -1,9 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import ContactToField from './ContactToField'
 import ContactFromField from './ContactFromField'
 import ContactMessageField from './ContactMessageField'
 import ContactSendButton from './ContactSendButton'
-import { turnstileSiteKey } from '../config/resume'
 
 interface ContactModalProps {
   isOpen: boolean
@@ -18,16 +17,6 @@ export default function ContactModal({ isOpen, toEmail, onClose }: ContactModalP
   const [statusText, setStatusText] = useState('')
   const [fromError, setFromError] = useState('')
   const sendingRef = useRef(false)
-  const turnstileContainerRef = useRef<HTMLDivElement | null>(null)
-  const turnstileWidgetIdRef = useRef<string | null>(null)
-  const turnstileScriptPromiseRef = useRef<Promise<void> | null>(null)
-  const turnstileTokenRef = useRef<string | null>(null)
-  const turnstilePendingRef = useRef<{
-    promise: Promise<string>
-    resolve: (token: string) => void
-    reject: (error: Error) => void
-  } | null>(null)
-  const hasTurnstileKey = Boolean(turnstileSiteKey)
 
   const isValidEmail = (value: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())
@@ -39,171 +28,12 @@ export default function ContactModal({ isOpen, toEmail, onClose }: ContactModalP
     setStatusText('')
     setFromError('')
     sendingRef.current = false
-    turnstileTokenRef.current = null
-    turnstilePendingRef.current = null
-    if (turnstileWidgetIdRef.current && window.turnstile) {
-      window.turnstile.reset(turnstileWidgetIdRef.current)
-    }
   }
 
   const handleClose = () => {
     resetForm()
     onClose()
   }
-
-  const ensureTurnstileScript = () => {
-    if (typeof window === 'undefined') {
-      return Promise.reject(new Error('Window is not available'))
-    }
-    if (window.turnstile) {
-      return Promise.resolve()
-    }
-    if (!turnstileScriptPromiseRef.current) {
-      turnstileScriptPromiseRef.current = new Promise((resolve, reject) => {
-        const scriptId = 'cf-turnstile-script'
-        const existing = document.getElementById(scriptId) as HTMLScriptElement | null
-        if (existing) {
-          existing.remove()
-        }
-
-        const script = document.createElement('script')
-        script.id = scriptId
-        script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'
-        script.onload = () => {
-          script.dataset.loaded = 'true'
-          resolve()
-        }
-        script.onerror = () => reject(new Error('Turnstile failed to load'))
-        document.head.appendChild(script)
-      })
-    }
-    return turnstileScriptPromiseRef.current
-  }
-
-  const getTurnstileToken = async (): Promise<string> => {
-    if (!hasTurnstileKey) {
-      throw new Error('Missing Turnstile site key')
-    }
-    await ensureTurnstileScript()
-    const turnstileApi = window.turnstile
-    if (!turnstileApi || !turnstileWidgetIdRef.current) {
-      throw new Error('Turnstile is not ready')
-    }
-    if (turnstilePendingRef.current) {
-      return await turnstilePendingRef.current.promise
-    }
-
-    let resolveToken: (token: string) => void
-    let rejectToken: (error: Error) => void
-    const tokenPromise = new Promise<string>((resolve, reject) => {
-      resolveToken = resolve
-      rejectToken = reject
-    })
-    turnstilePendingRef.current = {
-      promise: tokenPromise,
-      resolve: resolveToken!,
-      reject: rejectToken!,
-    }
-
-    const timeoutId = window.setTimeout(() => {
-      if (turnstilePendingRef.current) {
-        turnstilePendingRef.current.reject(new Error('Turnstile token timeout'))
-        turnstilePendingRef.current = null
-      }
-    }, 12000)
-
-    const resolvePending = (token: string) => {
-      if (!turnstilePendingRef.current) return
-      turnstileTokenRef.current = token
-      turnstilePendingRef.current.resolve(token)
-      turnstilePendingRef.current = null
-    }
-
-    const rejectPending = (error: Error) => {
-      if (!turnstilePendingRef.current) return
-      turnstilePendingRef.current.reject(error)
-      turnstilePendingRef.current = null
-    }
-
-    try {
-      if (turnstileTokenRef.current) {
-        resolvePending(turnstileTokenRef.current)
-      } else {
-        turnstileTokenRef.current = null
-        turnstileApi.reset(turnstileWidgetIdRef.current)
-        await new Promise<void>((resolve) => window.setTimeout(resolve, 150))
-        try {
-          const result = turnstileApi.execute(turnstileWidgetIdRef.current, { action: 'contact' })
-          if (typeof result === 'string' && result) {
-            resolvePending(result)
-          } else if (result && typeof (result as Promise<string>).then === 'function') {
-            ;(result as Promise<string>)
-              .then((token) => {
-                if (token) resolvePending(token)
-              })
-              .catch((error) => {
-                rejectPending(error instanceof Error ? error : new Error('Turnstile execute failed'))
-              })
-          }
-        } catch (error) {
-          rejectPending(error instanceof Error ? error : new Error('Turnstile execute failed'))
-        }
-      }
-
-      const token = await tokenPromise
-      return token
-    } finally {
-      window.clearTimeout(timeoutId)
-    }
-  }
-
-  useEffect(() => {
-    if (!isOpen || !hasTurnstileKey) return
-    let cancelled = false
-
-    const setupTurnstile = async () => {
-      try {
-        await ensureTurnstileScript()
-        const turnstileApi = window.turnstile
-        if (cancelled || !turnstileApi || !turnstileContainerRef.current) return
-        if (!turnstileWidgetIdRef.current) {
-          turnstileWidgetIdRef.current = turnstileApi.render(turnstileContainerRef.current, {
-            sitekey: turnstileSiteKey,
-            size: 'invisible',
-            callback: (token) => {
-              turnstileTokenRef.current = token
-              if (turnstilePendingRef.current) {
-                turnstilePendingRef.current.resolve(token)
-                turnstilePendingRef.current = null
-              }
-            },
-            'error-callback': () => {
-              turnstileTokenRef.current = null
-              if (turnstilePendingRef.current) {
-                turnstilePendingRef.current.reject(new Error('Turnstile error'))
-                turnstilePendingRef.current = null
-              }
-            },
-            'expired-callback': () => {
-              turnstileTokenRef.current = null
-              if (turnstilePendingRef.current) {
-                turnstilePendingRef.current.reject(new Error('Turnstile token expired'))
-                turnstilePendingRef.current = null
-              }
-            },
-          })
-        }
-      } catch {
-        // ignore load errors; surfaced during execute
-      }
-    }
-
-    setupTurnstile()
-
-    return () => {
-      cancelled = true
-    }
-  }, [isOpen, hasTurnstileKey])
 
   if (!isOpen) return null
 
@@ -224,14 +54,12 @@ export default function ContactModal({ isOpen, toEmail, onClose }: ContactModalP
 
     sendingRef.current = true
     setStatus('sending')
-    setStatusText('Verifying...')
+    setStatusText('Sending...')
     try {
-      const turnstileToken = await getTurnstileToken()
-      setStatusText('Sending...')
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ from: fromEmail, to: toEmail, message, turnstileToken }),
+        body: JSON.stringify({ from: fromEmail, to: toEmail, message }),
       })
 
       if (!response.ok) {
@@ -243,20 +71,13 @@ export default function ContactModal({ isOpen, toEmail, onClose }: ContactModalP
       setStatus('success')
       setStatusText('Message sent successfully')
       setFromError('')
-      setTimeout(handleClose, 2000)
+      setTimeout(handleClose, 3000)
     } catch (error) {
       console.error('Contact send error', error)
       setStatus('error')
-      const message =
-        error instanceof Error && error.message.toLowerCase().includes('turnstile')
-          ? 'Verification failed. Please try again.'
-          : 'Something went wrong. Please try again.'
-      setStatusText(message)
+      setStatusText('Something went wrong. Please try again.')
     } finally {
       sendingRef.current = false
-      if (turnstileWidgetIdRef.current && window.turnstile) {
-        window.turnstile.reset(turnstileWidgetIdRef.current)
-      }
     }
   }
 
@@ -320,7 +141,6 @@ export default function ContactModal({ isOpen, toEmail, onClose }: ContactModalP
           <span style={{ fontSize: '12px', color: '#b91c1c' }}>{fromError}</span>
         )}
         <ContactMessageField value={message} onChange={setMessage} />
-        <div ref={turnstileContainerRef} style={{ height: 0 }} />
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <span
