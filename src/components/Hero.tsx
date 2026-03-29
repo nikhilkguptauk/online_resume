@@ -1,11 +1,12 @@
 import { HEADER_GREEN_HEX } from '../constants/colors'
-import { heroData } from '../config/resume'
+import { heroData, typography } from '../config/resume'
 
 interface HeroProps {
   compact?: boolean
+  onContact?: () => void
 }
 
-export default function Hero({ compact }: HeroProps) {
+export default function Hero({ compact, onContact }: HeroProps) {
   const { name, title, phone, email, linkedInDisplay, linkedInUrl, websiteUrl, location } = heroData
 
   return (
@@ -35,7 +36,7 @@ export default function Hero({ compact }: HeroProps) {
         >
           <h1
             style={{
-              fontFamily: 'Georgia, "Times New Roman", serif',
+              fontFamily: typography.bodyFontFamily,
               fontSize: compact ? 'clamp(28px, 3.9vw, 36px)' : 'clamp(32px, 4.5vw, 42px)',
               fontWeight: 'bold',
               lineHeight: '1.2',
@@ -87,6 +88,23 @@ export default function Hero({ compact }: HeroProps) {
         >
           <span>{phone}</span>
           <span>{email}</span>
+          {onContact && (
+            <button
+              type="button"
+              onClick={onContact}
+              style={{
+                background: 'none',
+                border: 'none',
+                padding: 0,
+                color: '#1e40af',
+                textDecoration: 'underline',
+                cursor: 'pointer',
+                font: 'inherit',
+              }}
+            >
+              Contact Me
+            </button>
+          )}
           <a
             href={linkedInUrl}
             target="_blank"

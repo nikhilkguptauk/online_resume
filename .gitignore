@@ -4,6 +4,7 @@ dist-ssr/
 .env
 .env.*.local
 .dev.vars
+.env.local
 .DS_Store
 *.log
 npm-debug.log*

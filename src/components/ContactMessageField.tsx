@@ -15,6 +15,8 @@ export default function ContactMessageField({ value, onChange }: ContactMessageF
         onChange={(event) => onChange(event.target.value)}
         placeholder="Write your message..."
         required
+        minLength={5}
+        maxLength={2000}
         rows={6}
         style={{
           padding: '8px',

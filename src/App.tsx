@@ -139,6 +139,7 @@ export default function App() {
       style={{
         minHeight: '100vh',
         backgroundColor: '#e5e5e5',
+        color: '#111827',
         fontFamily: typography.bodyFontFamily,
         paddingTop: 'env(safe-area-inset-top, 0px)',
         paddingLeft: 'env(safe-area-inset-left, 0px)',
@@ -199,7 +200,7 @@ export default function App() {
             paddingBottom: '10px',
           }}
         >
-          <Hero compact />
+          <Hero compact onContact={() => setIsContactOpen(true)} />
           <ProfileSummary compact />
           <TechnologySkills compact />
 

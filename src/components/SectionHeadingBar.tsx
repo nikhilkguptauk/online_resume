@@ -1,4 +1,5 @@
 import GreenBar from './GreenBar'
+import { typography } from '../config/resume'
 
 interface SectionHeadingBarProps {
   title: string
@@ -13,7 +14,7 @@ export default function SectionHeadingBar({ title, compact }: SectionHeadingBarP
       <GreenBar height={barHeight}>
         <h2
           style={{
-            fontFamily: 'Georgia, "Times New Roman", serif',
+            fontFamily: typography.bodyFontFamily,
             fontSize: compact ? 'clamp(12px, 1.6vw, 15px)' : 'clamp(13px, 1.8vw, 17px)',
             fontWeight: 'bold',
             textAlign: 'center',

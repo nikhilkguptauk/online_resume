@@ -25,6 +25,8 @@ jobs:
         run: npm ci
 
       - name: Build
+        env:
+          VITE_TURNSTILE_SITE_KEY: ${{ secrets.VITE_TURNSTILE_SITE_KEY }}
         run: npm run build
 
       - name: Deploy Worker
@@ -33,6 +35,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           CONTACT_TO_EMAIL: ${{ secrets.CONTACT_TO_EMAIL }}
+          TURNSTILE_SECRET_KEY: ${{ secrets.TURNSTILE_SECRET_KEY }}
         run: |
           npx wrangler deploy --name "${{ secrets.CLOUDFLARE_WORKER_NAME }}" --compatibility-date 2024-12-01
 
@@ -46,6 +49,14 @@ jobs:
             echo "Missing CONTACT_TO_EMAIL in GitHub Secrets."
             exit 1
           fi
+          if [ -z "${{ secrets.TURNSTILE_SECRET_KEY }}" ]; then
+            echo "Missing TURNSTILE_SECRET_KEY in GitHub Secrets."
+            exit 1
+          fi
+          if [ -z "${{ secrets.VITE_TURNSTILE_SITE_KEY }}" ]; then
+            echo "Missing VITE_TURNSTILE_SITE_KEY in GitHub Secrets."
+            exit 1
+          fi
 
       - name: Sync Worker secrets
         env:
@@ -53,6 +64,8 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           CONTACT_TO_EMAIL: ${{ secrets.CONTACT_TO_EMAIL }}
+          TURNSTILE_SECRET_KEY: ${{ secrets.TURNSTILE_SECRET_KEY }}
         run: |
           echo "${RESEND_API_KEY}" | npx wrangler secret put RESEND_API_KEY --name "${{ secrets.CLOUDFLARE_WORKER_NAME }}"
           echo "${CONTACT_TO_EMAIL}" | npx wrangler secret put CONTACT_TO_EMAIL --name "${{ secrets.CLOUDFLARE_WORKER_NAME }}"
+          echo "${TURNSTILE_SECRET_KEY}" | npx wrangler secret put TURNSTILE_SECRET_KEY --name "${{ secrets.CLOUDFLARE_WORKER_NAME }}"
