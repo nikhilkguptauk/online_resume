@@ -1,9 +1,9 @@
-import { contactToEmail } from './src/config/resume'
+import { contactToEmail } from '../config/resume'
 
 interface Env {
   RESEND_API_KEY: string
   CONTACT_TO_EMAIL?: string
-  ASSETS: {
+  ASSETS?: {
     fetch: (request: Request) => Promise<Response>
   }
 }
@@ -29,7 +29,7 @@ export default {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            from: 'contact@nikhilkgupta.uk',
+            from: 'Nikhil K Gupta <contact@nikhilkgupta.uk>',
             to,
             subject: `New website message from ${from}`,
             text: `From: ${from}\n\nMessage:\n${message}`,
@@ -48,6 +48,10 @@ export default {
       }
     }
 
-    return env.ASSETS.fetch(request)
+    if (env.ASSETS) {
+      return env.ASSETS.fetch(request)
+    }
+
+    return new Response('Asset binding not available', { status: 404 })
   },
 }

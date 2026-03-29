@@ -9,7 +9,7 @@ export default function ContactFromField({ value, onChange }: ContactFromFieldPr
       style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}
       data-component="ContactFromField"
     >
-      <span style={{ fontSize: '12px', fontWeight: 600 }}>From</span>
+      <span style={{ fontSize: '12px', fontWeight: 600 }}>Reply-to</span>
       <input
         type="email"
         value={value}

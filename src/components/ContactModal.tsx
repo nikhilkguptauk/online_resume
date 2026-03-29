@@ -20,6 +20,19 @@ export default function ContactModal({ isOpen, toEmail, onClose }: ContactModalP
   const isValidEmail = (value: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())
 
+  const resetForm = () => {
+    setFromEmail('')
+    setMessage('')
+    setStatus('idle')
+    setStatusText('')
+    setFromError('')
+  }
+
+  const handleClose = () => {
+    resetForm()
+    onClose()
+  }
+
   if (!isOpen) return null
 
   const handleSend = async () => {
@@ -53,8 +66,7 @@ export default function ContactModal({ isOpen, toEmail, onClose }: ContactModalP
       setStatus('success')
       setStatusText('Message sent!')
       setFromError('')
-      setFromEmail('')
-      setMessage('')
+      setTimeout(handleClose, 800)
     } catch {
       setStatus('error')
       setStatusText('Something went wrong. Please try again.')
@@ -74,7 +86,7 @@ export default function ContactModal({ isOpen, toEmail, onClose }: ContactModalP
         justifyContent: 'center',
         zIndex: 50,
       }}
-      onClick={onClose}
+      onClick={handleClose}
     >
       <div
         style={{
@@ -94,7 +106,7 @@ export default function ContactModal({ isOpen, toEmail, onClose }: ContactModalP
           <h3 style={{ margin: 0, fontSize: '18px' }}>Message Me</h3>
           <button
             type="button"
-            onClick={onClose}
+            onClick={handleClose}
             style={{
               border: 'none',
               background: 'transparent',
