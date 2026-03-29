@@ -105,6 +105,11 @@ export default function ContactModal({ isOpen, toEmail, onClose }: ContactModalP
       reject: rejectToken!,
     }
 
+    if (turnstileTokenRef.current) {
+      turnstilePendingRef.current = null
+      return turnstileTokenRef.current
+    }
+
     const timeoutId = window.setTimeout(() => {
       if (turnstilePendingRef.current) {
         turnstilePendingRef.current.reject(new Error('Turnstile token timeout'))
@@ -113,21 +118,8 @@ export default function ContactModal({ isOpen, toEmail, onClose }: ContactModalP
     }, 12000)
 
     try {
-      if (turnstileTokenRef.current) {
-        resolveToken!(turnstileTokenRef.current)
-        turnstilePendingRef.current = null
-      } else {
-        turnstileTokenRef.current = null
-        turnstileApi.reset(turnstileWidgetIdRef.current)
-        turnstileApi.execute(turnstileWidgetIdRef.current, { action: 'contact' })
-      }
-    } catch (error) {
-      window.clearTimeout(timeoutId)
-      turnstilePendingRef.current = null
-      throw error instanceof Error ? error : new Error('Turnstile execute failed')
-    }
-
-    try {
+      turnstileTokenRef.current = null
+      turnstileApi.reset(turnstileWidgetIdRef.current)
       const token = await tokenPromise
       return token
     } finally {
