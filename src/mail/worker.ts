@@ -15,13 +15,20 @@ export default {
     const url = new URL(request.url)
 
     if (url.pathname === '/api/contact' && request.method === 'POST') {
+      console.log('Contact API request', request.method, url.pathname)
       try {
         const { from, message } = await request.json()
         if (!from || !message) {
+          console.error('Contact API missing fields', { hasFrom: !!from, hasMessage: !!message })
           return new Response('Missing required fields', { status: 400 })
         }
 
         const to = env.CONTACT_TO_EMAIL || DEFAULT_TO
+        console.log('Contact API payload', {
+          from,
+          to,
+          messageLength: String(message).length,
+        })
         const response = await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: {
@@ -39,11 +46,14 @@ export default {
 
         if (!response.ok) {
           const errorText = await response.text()
+          console.error('Resend error', response.status, errorText)
           return new Response(errorText, { status: 500 })
         }
 
+        console.log('Resend ok', response.status)
         return new Response('OK', { status: 200 })
       } catch (error) {
+        console.error('Contact API error', error)
         return new Response('Invalid request', { status: 400 })
       }
     }

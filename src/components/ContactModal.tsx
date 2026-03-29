@@ -51,6 +51,7 @@ export default function ContactModal({ isOpen, toEmail, onClose }: ContactModalP
 
     setStatus('sending')
     setStatusText('Sending...')
+    console.log('Contact send started', { to: toEmail })
 
     try {
       const response = await fetch('/api/contact', {
@@ -60,14 +61,18 @@ export default function ContactModal({ isOpen, toEmail, onClose }: ContactModalP
       })
 
       if (!response.ok) {
+        const errorText = await response.text()
+        console.error('Contact send failed', response.status, errorText)
         throw new Error('Failed to send')
       }
 
       setStatus('success')
       setStatusText('Message sent!')
       setFromError('')
+      console.log('Contact send succeeded')
       setTimeout(handleClose, 800)
-    } catch {
+    } catch (error) {
+      console.error('Contact send error', error)
       setStatus('error')
       setStatusText('Something went wrong. Please try again.')
     }
