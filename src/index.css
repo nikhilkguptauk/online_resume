@@ -13,8 +13,9 @@ body {
   background-color: #dbffcf !important;
 }
 
-.resume-page {
-  min-height: 297mm;
+/* Single flowing resume container for dynamic pagination */
+.resume-content {
+  background-color: #ffffff;
 }
 
 @media print {
@@ -29,7 +30,7 @@ body {
 
   @page {
     size: A4;
-    margin: 0;
+    margin: 12mm;
   }
 
   html,
@@ -46,17 +47,11 @@ body {
     transform: none !important;
   }
 
-  .resume-page {
+  .resume-content {
     background-color: #ffffff !important;
     box-shadow: none !important;
     margin-top: 0 !important;
     margin-bottom: 0 !important;
-    height: 297mm;
-    min-height: 297mm;
-  }
-
-  .resume-page:not(:last-child) {
-    page-break-after: always;
-    break-after: page;
+    background-image: none !important;
   }
 }

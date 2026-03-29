@@ -1,4 +1,5 @@
 import SectionHeadingBar from './SectionHeadingBar'
+import BulletPoint from './BulletPoint'
 import { profileBullets, typography } from '../config/resume'
 
 interface ProfileSummaryProps {
@@ -17,7 +18,7 @@ function renderBoldMarkup(text: string): React.ReactNode[] {
 
 export default function ProfileSummary({ compact }: ProfileSummaryProps) {
   return (
-    <div>
+    <div data-component="ProfileSummary">
       <div style={{ height: '10px' }} />
       <SectionHeadingBar title="PROFILE SUMMARY" compact={compact} />
       <ul
@@ -30,9 +31,7 @@ export default function ProfileSummary({ compact }: ProfileSummaryProps) {
         }}
       >
         {profileBullets.map((bullet, idx) => (
-          <li key={idx} style={{ marginBottom: typography.listItemSpacing }}>
-            {renderBoldMarkup(bullet)}
-          </li>
+          <BulletPoint key={idx}>{renderBoldMarkup(bullet)}</BulletPoint>
         ))}
       </ul>
     </div>

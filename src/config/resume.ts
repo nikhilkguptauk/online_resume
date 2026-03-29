@@ -1,8 +1,10 @@
+export const contactToEmail = 'contact@nikhilkgupta.uk'
+
 export const heroData = {
   name: 'Nikhil K Gupta',
   title: 'Senior Automation Engineer',
   phone: '+44-7979 965 209',
-  email: 'contact@nikhilkgupta.uk',
+  email: contactToEmail,
   linkedInDisplay: 'www.linkedin.com/in/nikhilkgupta84',
   linkedInUrl: 'https://www.linkedin.com/in/nikhilkgupta84',
   websiteDisplay: 'NikhilKGupta.uk',
@@ -11,9 +13,9 @@ export const heroData = {
 }
 
 export const typography = {
-  bodyFontFamily: '"Arial", system-ui, -apple-system, "Segoe UI", sans-serif',
-  bodyFontSize: '10pt',
-  bodyFontSizeCompact: '10pt',
+  bodyFontFamily: "'Calibri', 'Trebuchet MS', system-ui, -apple-system, 'Segoe UI', sans-serif",
+  bodyFontSize: '11pt',
+  bodyFontSizeCompact: '11pt',
   bodyLineHeight: '1.2',
   listPadding: '6px 20px 6px 36px',
   listItemSpacing: '3px',

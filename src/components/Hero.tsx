@@ -9,7 +9,10 @@ export default function Hero({ compact }: HeroProps) {
   const { name, title, phone, email, linkedInDisplay, linkedInUrl, websiteUrl, location } = heroData
 
   return (
-    <div style={{ padding: compact ? '8px 8px 0 8px' : '12px 12px 0 12px' }}>
+    <div
+      style={{ padding: compact ? '8px 8px 0 8px' : '12px 12px 0 12px' }}
+      data-component="Hero"
+    >
       <div
         style={{
           backgroundColor: HEADER_GREEN_HEX,

@@ -8,9 +8,11 @@ import SectionTable from './components/SectionTable'
 import SectionHeadingBar from './components/SectionHeadingBar'
 import ProjectBlock from './components/ProjectBlock'
 import PageIndicator from './components/PageIndicator'
+import ContactModal from './components/ContactModal'
 import {
   typography,
   ui,
+  heroData,
   employmentHistory,
   domainExperience,
   globalExposure,
@@ -31,10 +33,14 @@ export default function App() {
   const [zoom, setZoom] = useState(1)
   const [activePage, setActivePage] = useState(1)
   const [showPageIndicator, setShowPageIndicator] = useState(false)
-  const totalPages = 4
-  const pageRefs = useRef<Array<HTMLDivElement | null>>([])
+  const [totalPages, setTotalPages] = useState(1)
+  const contentRef = useRef<HTMLDivElement | null>(null)
+  const measureRef = useRef<HTMLDivElement | null>(null)
   const scrollTimeoutRef = useRef<number | null>(null)
   const scrollRafRef = useRef<number | null>(null)
+  const pageHeightRef = useRef<number>(0)
+  const totalPagesRef = useRef<number>(1)
+  const [isContactOpen, setIsContactOpen] = useState(false)
 
   const downloadButtonStyle =
     ui.downloadButtonStyles[ui.downloadButtonVariant] ?? ui.downloadButtonStyles.option3
@@ -51,32 +57,31 @@ export default function App() {
 
   const canZoomOut = zoom > minZoom
   const canZoomIn = zoom < maxZoom
-  const [firstProject, ...remainingProjects] = projectsPage3
-  const [firstPage4Project, ...remainingPage4Projects] = projectsPage4
-
   const updateZoom = (nextValue: number) => {
     const clamped = Math.min(maxZoom, Math.max(minZoom, nextValue))
     setZoom(clamped)
   }
 
   useEffect(() => {
+    const updatePageMetrics = () => {
+      if (!contentRef.current || !pageHeightRef.current) return
+      const contentHeight = contentRef.current.getBoundingClientRect().height
+      const pages = Math.max(1, Math.ceil(contentHeight / pageHeightRef.current))
+      totalPagesRef.current = pages
+      setTotalPages((prev) => (prev === pages ? prev : pages))
+    }
+
     const updateActivePage = () => {
-      const viewportCenter = window.innerHeight / 2
-      let bestPage = 1
-      let bestDistance = Number.POSITIVE_INFINITY
-
-      pageRefs.current.forEach((node, index) => {
-        if (!node) return
-        const rect = node.getBoundingClientRect()
-        const pageCenter = rect.top + rect.height / 2
-        const distance = Math.abs(pageCenter - viewportCenter)
-        if (distance < bestDistance) {
-          bestDistance = distance
-          bestPage = index + 1
-        }
-      })
-
-      setActivePage((prev) => (prev === bestPage ? prev : bestPage))
+      if (!contentRef.current || !pageHeightRef.current) return
+      const contentTop = contentRef.current.getBoundingClientRect().top + window.scrollY
+      const viewportCenter = window.scrollY + window.innerHeight / 2
+      const rawIndex =
+        Math.floor((viewportCenter - contentTop) / pageHeightRef.current) + 1
+      const clampedIndex = Math.min(
+        totalPagesRef.current,
+        Math.max(1, rawIndex),
+      )
+      setActivePage((prev) => (prev === clampedIndex ? prev : clampedIndex))
     }
 
     const handleScroll = () => {
@@ -95,11 +100,31 @@ export default function App() {
       })
     }
 
-    window.addEventListener('scroll', handleScroll, { passive: true })
+    if (measureRef.current) {
+      pageHeightRef.current = measureRef.current.getBoundingClientRect().height
+    }
+    updatePageMetrics()
     updateActivePage()
+
+    const resizeObserver = new ResizeObserver(() => {
+      if (measureRef.current) {
+        pageHeightRef.current = measureRef.current.getBoundingClientRect().height
+      }
+      updatePageMetrics()
+      updateActivePage()
+    })
+
+    if (contentRef.current) {
+      resizeObserver.observe(contentRef.current)
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    window.addEventListener('resize', updatePageMetrics)
 
     return () => {
       window.removeEventListener('scroll', handleScroll)
+      window.removeEventListener('resize', updatePageMetrics)
+      resizeObserver.disconnect()
       if (scrollTimeoutRef.current) {
         window.clearTimeout(scrollTimeoutRef.current)
       }
@@ -121,6 +146,21 @@ export default function App() {
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
       }}
     >
+      <ContactModal
+        isOpen={isContactOpen}
+        toEmail={heroData.email}
+        onClose={() => setIsContactOpen(false)}
+      />
+      <div
+        ref={measureRef}
+        style={{
+          position: 'absolute',
+          visibility: 'hidden',
+          pointerEvents: 'none',
+          height: '297mm',
+          width: '1px',
+        }}
+      />
       <PageIndicator
         activePage={activePage}
         totalPages={totalPages}
@@ -132,6 +172,7 @@ export default function App() {
         canZoomIn={canZoomIn}
         onZoomOut={() => updateZoom(zoom - zoomStep)}
         onZoomIn={() => updateZoom(zoom + zoomStep)}
+        onContact={() => setIsContactOpen(true)}
         onDownload={() => window.print()}
         downloadButtonStyle={downloadButtonStyle}
         zoomButtonStyle={zoomButtonStyle}
@@ -144,154 +185,69 @@ export default function App() {
           transformOrigin: 'top center',
         }}
       >
-        {/* Page 1 */}
         <div
-          ref={(node) => {
-            pageRefs.current[0] = node
-          }}
-          className="resume-page resume-page-1"
+          ref={contentRef}
+          className="resume-content"
           style={{
             maxWidth: '210mm',
             marginTop: '10px',
+            marginBottom: '10px',
             marginLeft: 'auto',
             marginRight: 'auto',
             backgroundColor: '#ffffff',
             boxShadow: '0 4px 32px rgba(0,0,0,0.12)',
+            paddingBottom: '10px',
           }}
         >
           <Hero compact />
           <ProfileSummary compact />
           <TechnologySkills compact />
-        </div>
 
-        {/* Page 2 */}
-        <div
-          ref={(node) => {
-            pageRefs.current[1] = node
-          }}
-          className="resume-page resume-page-2"
-          style={{
-            maxWidth: '210mm',
-            marginTop: '10px',
-            marginBottom: '10px',
-            marginLeft: 'auto',
-            marginRight: 'auto',
-            backgroundColor: '#ffffff',
-            boxShadow: '0 4px 32px rgba(0,0,0,0.12)',
-          }}
-        >
+          <div style={{ height: '10px' }} />
+          <SectionTable data={employmentHistory} compact />
+          <SectionTable data={domainExperience} compact />
+          <SectionTable data={globalExposure} compact />
+          <SectionTable data={awardsRecognition} compact />
+          <SectionTable data={certifications} compact />
+          <SectionTable data={education} compact />
+          <SectionTable data={personalDetails} compact />
+
+          <div style={{ height: '10px' }} />
+          <SectionHeadingBar title="PROJECTS" compact />
+          {projectsPage3.map((entry) => (
+            <ProjectBlock key={entry.heading} compact {...entry} />
+          ))}
+          {druvaContinuationBullets.length > 0 && (
+            <ProjectBlock
+              bullets={druvaContinuationBullets}
+              showHeading={false}
+              showSummary={false}
+              showContributionsLabel={false}
+              compact
+            />
+          )}
+          {projectsPage4.map((entry) => (
+            <ProjectBlock key={entry.heading} compact {...entry} />
+          ))}
+
+          <div style={{ height: '10px' }} />
+          <SectionHeadingBar title="DECLARATION" compact />
           <div
             style={{
-              paddingTop: '4px',
-              paddingBottom: '8px',
               display: 'flex',
-              flexDirection: 'column',
-              gap: '6px',
+              justifyContent: 'space-between',
+              padding: '6px 24px 0 32px',
+              fontSize: typography.bodyFontSize,
+              lineHeight: typography.bodyLineHeight,
             }}
           >
-            <SectionTable data={employmentHistory} compact />
-            <SectionTable data={domainExperience} compact />
-            <SectionTable data={globalExposure} compact />
-            <SectionTable data={awardsRecognition} compact />
-            <SectionTable data={certifications} compact />
-            <SectionTable data={education} compact />
-            <SectionTable data={personalDetails} compact />
-            {firstProject && (
-              <>
-                <SectionHeadingBar title="PROJECTS" compact />
-                <ProjectBlock compact {...firstProject} />
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* Page 3 */}
-        <div
-          ref={(node) => {
-            pageRefs.current[2] = node
-          }}
-          className="resume-page resume-page-3"
-          style={{
-            maxWidth: '210mm',
-            marginTop: '10px',
-            marginBottom: '10px',
-            marginLeft: 'auto',
-            marginRight: 'auto',
-            backgroundColor: '#ffffff',
-            boxShadow: '0 4px 32px rgba(0,0,0,0.12)',
-          }}
-        >
-          <div
-            style={{
-              paddingTop: '4px',
-              paddingBottom: '8px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '6px',
-            }}
-          >
-            {remainingProjects.map((entry) => (
-              <ProjectBlock key={entry.heading} compact {...entry} />
-            ))}
-            {druvaContinuationBullets.length > 0 && (
-              <ProjectBlock
-                bullets={druvaContinuationBullets}
-                showHeading={false}
-                showSummary={false}
-                showContributionsLabel={false}
-                compact
-              />
-            )}
-            {firstPage4Project && <ProjectBlock key={firstPage4Project.heading} compact {...firstPage4Project} />}
-          </div>
-        </div>
-
-        {/* Page 4 */}
-        <div
-          ref={(node) => {
-            pageRefs.current[3] = node
-          }}
-          className="resume-page resume-page-4"
-          style={{
-            maxWidth: '210mm',
-            marginTop: '10px',
-            marginBottom: '10px',
-            marginLeft: 'auto',
-            marginRight: 'auto',
-            backgroundColor: '#ffffff',
-            boxShadow: '0 4px 32px rgba(0,0,0,0.12)',
-          }}
-        >
-          <div
-            style={{
-              paddingTop: '4px',
-              paddingBottom: '8px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '6px',
-            }}
-          >
-            {remainingPage4Projects.map((entry) => (
-              <ProjectBlock key={entry.heading} compact {...entry} />
-            ))}
-            <SectionHeadingBar title="DECLARATION" compact />
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                padding: '6px 24px 0 32px',
-                fontSize: '10pt',
-                lineHeight: '1.2',
-              }}
-            >
-              <div>
-                <div style={{ fontWeight: 700 }}>{declaration.name}</div>
-                {declaration.addressLines.map((line) => (
-                  <div key={line}>{line}</div>
-                ))}
-              </div>
-              <div>{declaration.date}</div>
+            <div>
+              <div style={{ fontWeight: 700 }}>{declaration.name}</div>
+              {declaration.addressLines.map((line) => (
+                <div key={line}>{line}</div>
+              ))}
             </div>
+            <div>{declaration.date}</div>
           </div>
         </div>
       </div>

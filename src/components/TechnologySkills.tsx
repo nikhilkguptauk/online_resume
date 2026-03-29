@@ -1,4 +1,5 @@
 import SectionHeadingBar from './SectionHeadingBar'
+import BulletPoint from './BulletPoint'
 import { technicalSkills, typography } from '../config/resume'
 
 interface TechnologySkillsProps {
@@ -7,7 +8,7 @@ interface TechnologySkillsProps {
 
 export default function TechnologySkills({ compact }: TechnologySkillsProps) {
   return (
-    <div>
+    <div data-component="TechnologySkills">
       <div style={{ height: '10px' }} />
       <SectionHeadingBar title="TECHNICAL SKILLS" compact={compact} />
       <ul
@@ -20,9 +21,9 @@ export default function TechnologySkills({ compact }: TechnologySkillsProps) {
         }}
       >
         {technicalSkills.map((row, idx) => (
-          <li key={idx} style={{ marginBottom: typography.listItemSpacing }}>
+          <BulletPoint key={idx}>
             <strong>{row.category}:</strong> {row.text}
-          </li>
+          </BulletPoint>
         ))}
       </ul>
     </div>

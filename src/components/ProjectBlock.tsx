@@ -1,4 +1,5 @@
 import { typography } from '../config/resume'
+import BulletPoint from './BulletPoint'
 
 interface ProjectBlockProps {
   heading?: string
@@ -23,7 +24,7 @@ export default function ProjectBlock({
   const bodyFontSize = compact ? typography.bodyFontSizeCompact : typography.bodyFontSize
 
   return (
-    <div>
+    <div data-component="ProjectBlock">
       {showHeading && heading && (
         <div
           style={{
@@ -71,9 +72,7 @@ export default function ProjectBlock({
         }}
       >
         {bullets.map((item, index) => (
-          <li key={`${heading ?? 'project'}-${index}`} style={{ marginBottom: typography.listItemSpacing }}>
-            {item}
-          </li>
+          <BulletPoint key={`${heading ?? 'project'}-${index}`}>{item}</BulletPoint>
         ))}
       </ul>
     </div>

@@ -23,6 +23,7 @@ export default function PageIndicator({ activePage, totalPages, visible }: PageI
         fontSize: '12px',
         pointerEvents: 'none',
       }}
+      data-component="PageIndicator"
     >
       Page {activePage} of {totalPages}
     </div>

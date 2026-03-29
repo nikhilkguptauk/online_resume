@@ -1,4 +1,4 @@
-import { HEADER_GREEN_HEX } from '../constants/colors'
+import GreenBar from './GreenBar'
 
 interface SectionHeadingBarProps {
   title: string
@@ -6,14 +6,11 @@ interface SectionHeadingBarProps {
 }
 
 export default function SectionHeadingBar({ title, compact }: SectionHeadingBarProps) {
+  const barHeight = compact ? 'clamp(18px, 2.6vw, 24px)' : 'clamp(22px, 3vw, 28px)'
+
   return (
-    <div style={{ padding: '0 8px' }}>
-      <div
-        style={{
-          backgroundColor: HEADER_GREEN_HEX,
-          padding: compact ? '5px 0' : '7px 0',
-        }}
-      >
+    <div style={{ padding: '0 8px' }} data-component="SectionHeadingBar">
+      <GreenBar height={barHeight}>
         <h2
           style={{
             fontFamily: 'Georgia, "Times New Roman", serif',
@@ -27,7 +24,7 @@ export default function SectionHeadingBar({ title, compact }: SectionHeadingBarP
         >
           {title}
         </h2>
-      </div>
+      </GreenBar>
     </div>
   )
 }

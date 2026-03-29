@@ -6,6 +6,7 @@ interface ZoomToolbarProps {
   canZoomIn: boolean
   onZoomOut: () => void
   onZoomIn: () => void
+  onContact: () => void
   onDownload: () => void
   downloadButtonStyle: CSSProperties
   zoomButtonStyle: CSSProperties
@@ -17,6 +18,7 @@ export default function ZoomToolbar({
   canZoomIn,
   onZoomOut,
   onZoomIn,
+  onContact,
   onDownload,
   downloadButtonStyle,
   zoomButtonStyle,
@@ -41,6 +43,7 @@ export default function ZoomToolbar({
         alignItems: 'center',
         justifyContent: 'space-between',
       }}
+      data-component="ZoomToolbar"
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
         <button
@@ -61,9 +64,14 @@ export default function ZoomToolbar({
           +
         </button>
       </div>
-      <button type="button" onClick={onDownload} style={downloadButtonStyle}>
-        Download PDF
-      </button>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <button type="button" onClick={onContact} style={downloadButtonStyle} data-component="ContactTrigger">
+          Contact
+        </button>
+        <button type="button" onClick={onDownload} style={downloadButtonStyle}>
+          Download PDF
+        </button>
+      </div>
     </div>
   )
 }
