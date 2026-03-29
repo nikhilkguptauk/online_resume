@@ -34,4 +34,4 @@ jobs:
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           CONTACT_TO_EMAIL: ${{ secrets.CONTACT_TO_EMAIL }}
         run: |
-          npx wrangler deploy src/mail/worker.ts --assets dist --name "${{ secrets.CLOUDFLARE_WORKER_NAME }}" --compatibility-date 2024-12-01
+          npx wrangler deploy --name "${{ secrets.CLOUDFLARE_WORKER_NAME }}" --compatibility-date 2024-12-01
