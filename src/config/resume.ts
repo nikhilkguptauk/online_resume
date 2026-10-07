@@ -1,14 +1,16 @@
-export const contactToEmail = 'contact@nikhilkgupta.uk'
+export const contactToEmail = 'nikhil@nikhilkgupta.uk'
 
 export const heroData = {
   name: 'Nikhil K Gupta',
-  title: 'Senior Automation Engineer',
+  title: 'Senior Software Engineer',
   phone: '+44-7979 965 209',
   email: contactToEmail,
-  linkedInDisplay: 'www.linkedin.com/in/nikhilkgupta84',
-  linkedInUrl: 'https://www.linkedin.com/in/nikhilkgupta84',
+  linkedInDisplay: 'https://linkedin.com/in/nikhilkguptauk',
+  linkedInUrl: 'https://www.linkedin.com/in/nikhilkguptauk',
   websiteDisplay: 'NikhilKGupta.uk',
   websiteUrl: 'https://NikhilKGupta.uk',
+  githubDisplay: 'https://github.com/nikhilkguptauk',
+  githubUrl: 'https://github.com/nikhilkguptauk',
   location: 'London, UK',
 }
 
@@ -83,7 +85,7 @@ export const ui = {
 }
 
 export const profileBullets: string[] = [
-  '**14 years** of experience in development, automation using **Python, Pytest, Robot framework, JavaScript Selenium Web Driver, Playwright, Flask REST API** and Mobile Automation using **Appium** and **XCUITest**.',
+  '**15 years** of experience in development, automation using **Python, Pytest, Robot framework, JavaScript Selenium Web Driver, Playwright, Flask REST API** and Mobile Automation using **Appium** and **XCUITest**.',
   '**Mobile test automation:** Architected **iOS/Android** frameworks with **Appium**, **XCUITest**, **Robot Framework**, **pytest**/**pytest-xdist**, **Allure**, **WebDriverAgent (WDA)**, reusable keywords/libraries, **page objects**, and **device-farm** orchestration; **Jenkins** CI/CD on **real devices**.',
   '**Automation platform:** **React** / **TypeScript** dashboard, **Flask** **REST** APIs, **Kubernetes** deployments, real-time execution monitoring, metrics/trends, and **Allure**-integrated reporting.',
   '**AI & LLM tooling:** Daily use of **Cursor** for AI-assisted development; experience with **Anthropic Claude** models, **Google Gemini** APIs, and **MCP** (Model Context Protocol) servers for integrated workflows and automation.',
@@ -101,6 +103,9 @@ export const profileBullets: string[] = [
   'Active participant in sprint ceremonies viz. sprint planning, estimation, backlog grooming, closure, retrospection, etc.',
   'Excellent in managing time and tasks to handle multiple work streams. Successfully executed projects with globally distributed teams, from different cultural backgrounds, while maintaining good relationships.',
   'Self-Motivator & Team Player.',
+  '**GitOps Automation:** Using **GitHub Actions**, automatically update **AWS** infrastructure on PR merge.',
+  '**GKE Cluster Provisioning:** Provisioned single-node **GKE** zonal cluster on **GCP** using reusable **Terraform** modules.',
+  '**Prometheus on GKE:** Deployed **Prometheus** server on **GKE** using **Helm** provider with **LoadBalancer** access from local machine.',
 ]
 
 export interface SkillRow {
@@ -127,26 +132,30 @@ export const projectsPage3: ProjectEntry[] = [
     summary: 'Motorola Solutions - London',
     bullets: [
       'Mobile Test Automation Framework',
-      'Architected an enterprise-grade mobile automation framework for iOS and Android using Appium, Robot Framework, XCUITest, Playwrite and Python.',
-      'Built 100+ reusable Robot Framework keywords and custom libraries for core scenarios including device management and authentication.',
-      'Implemented intelligent driver management with automated Appium service orchestration and iOS WebDriverAgent (WDA) setup.',
-      'Designed a modular Page Object architecture with 20+ screen objects to ensure maintainable and scalable test development.',
-      'Integrated Pytest-xdist for parallel execution and Allure reporting for advanced test visualisation and analytics.',
-      'Web-Based Automation Platform',
-      'Developed a full-stack automation dashboard utilising a React TypeScript frontend and a Python Flask backend.',
-      'Built real-time execution monitoring tools featuring historical reporting and integrated Allure report viewing.',
-      'Engineered a REST API to handle test orchestration, device management, and execution result storage.',
-      'Created Kubernetes deployment configurations to enable scalable, cloud-based test execution.',
-      'Implemented a responsive UI featuring test metrics visualisation and execution trend charts.',
-      'CI/CD Integration & Infrastructure',
-      'Integrated the automation framework into CI/CD pipelines to enable automated validation for every build on real devices.',
-      'Configured Jenkins pipelines for scheduled execution including automated video recording for failed scenarios.',
-      'Set up a device farm management system with automatic device discovery and allocation logic.',
+      'Architected mobile automation framework for iOS and Android using Appium, Robot Framework, and Python with 100+ reusable keywords.',
+      'Built modular page objects for 20+ screens with intelligent driver management and iOS WebDriverAgent (WDA) orchestration.',
+      'Integrated pytest-xdist for parallel execution and Allure reporting for advanced test visualisation and analytics.',
+      'API Test Automation (Playwright)',
+      'Built typed TypeScript framework using Client → Actions → Spec architecture with 30+ reusable action classes.',
+      'Implemented resource tracker for state sharing, automated setup/teardown, and retry/polling for async workflows.',
+      'Authored automation guidelines adopted as team standard.',
+      'GUI Automation (Playwright)',
+      'Developed end-to-end web test suite with reusable page objects and fixture-based setup.',
+      'Integrated visual regression and accessibility checks.',
+      'QA Test Reporting Dashboard',
+      'Delivered full-stack dashboard (Nuxt.js/TypeScript, PostgreSQL) with real-time monitoring, trend analysis, and Allure trace viewer.',
+      'Engineered AWS S3 storage with deduplication; deployed on AWS EKS and GCP GKE via Terraform.',
+      'Built REST API for test ingestion, streaming uploads, and bulk import.',
+      'Integrated AI-powered failure diagnosis (Anthropic Claude) for root-cause analysis.',
+      'CI/CD & Infrastructure',
+      'Integrated test suites into CI/CD pipelines with Jenkins for automated regression on real devices.',
+      'Provisioned cloud infrastructure with Terraform; containerised with Docker/Kubernetes.',
+      'Set up device farm with automatic device discovery and allocation.',
       'Key Impact & Results',
       'Reduced manual regression testing by 70% through strategic automated test coverage.',
-      'Achieved 95%+ test reliability by implementing sophisticated automatic retry mechanisms.',
-      'Accelerated release cycles by providing continuous automated validation within the deployment pipeline.',
-      "Enabled non-technical stakeholders to contribute to testing via Robot Framework's natural language syntax.",
+      'Achieved 95%+ test reliability by implementing automatic retry and self-healing teardown.',
+      'Accelerated release cycles with continuous automated validation within the deployment pipeline.',
+      "Enabled non-technical stakeholders to write tests via Robot Framework's natural language syntax.",
     ],
   },
   {
@@ -334,14 +343,15 @@ export const personalDetails: SectionTableData = {
 
 export const technicalSkills: SkillRow[] = [
   { category: 'Python', text: 'Python 2.7 & Python 3.8. Python Unit Test, Python PyTest, Robot framework, Python Flask, Python CherryPy, Python Selenium Web driver, Django, Pandas etc.' },
-  { category: 'JavaScript', text: 'NodeJS, ExpressJS, ReactJS, TypeScript, Cypress' },
+  { category: 'JavaScript', text: 'NodeJS, ExpressJS, ReactJS, Nuxt.js, TypeScript, Playwright, Cypress' },
   { category: 'Mobile test automation', text: 'Appium (iOS/Android), XCUITest, Robot Framework, WebDriverAgent (WDA), device farm setup, pytest-xdist' },
   { category: 'Virtualization', text: 'Administration of VMWare, Vsphere, Hyper' },
-  { category: 'DevOps', text: 'Kubernetes, Docker, Ansible 2.4, Jenkins, Terraform, Kibana, Curl, Kafka, Jenkins, Logstash, Putty, Windows Power shell, Windows Batch file scripting, Unix Shell file scripting, Groovy' },
+  { category: 'DevOps', text: 'Kubernetes, Docker, Helm, Ansible 2.4, Jenkins, Terraform, GitHub Actions, Kibana, Curl, Kafka, Logstash, Putty, Windows Power shell, Windows Batch file scripting, Unix Shell file scripting, Groovy' },
+  { category: 'Monitoring', text: 'Prometheus, Pushgateway, node_exporter, Allure, Grafana' },
   { category: 'Cloud Services', text: 'AWS EC2, AWS RDS, AWS-S3, AWS Lambda, Google Cloud' },
   { category: 'Messaging Servers', text: 'Rabbit MQ, Apache Kafka' },
   { category: 'Operating Systems', text: 'Windows, Linux, MacOS' },
-  { category: 'Databases', text: 'MySQL, Oracle, Hbase, Redis, MongoDB, MS SQL' },
+  { category: 'Databases', text: 'MySQL, PostgreSQL, Oracle, Hbase, Redis, MongoDB, MS SQL' },
   { category: 'Development IDE', text: 'PyCharm, Eclipse, VS Code, Cursor' },
   { category: 'AI & LLM', text: 'Cursor (AI IDE), Anthropic Claude models, Google Gemini API, MCP servers (Model Context Protocol)' },
   { category: 'Testing Tools', text: 'Selenium, Playwright, JMeter, SOAP-UI, Postman, Allure' },

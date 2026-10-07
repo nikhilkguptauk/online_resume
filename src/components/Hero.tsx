@@ -6,7 +6,7 @@ interface HeroProps {
 }
 
 export default function Hero({ compact }: HeroProps) {
-  const { name, title, phone, email, linkedInDisplay, linkedInUrl, websiteUrl, location } = heroData
+  const { name, title, phone, email, linkedInDisplay, linkedInUrl, websiteUrl, githubDisplay, githubUrl, location } = heroData
 
   return (
     <div
@@ -88,20 +88,28 @@ export default function Hero({ compact }: HeroProps) {
           <span>{phone}</span>
           <span>{email}</span>
           <a
-            href={linkedInUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ color: '#1e40af', textDecoration: 'underline' }}
-          >
-            {linkedInDisplay}
-          </a>
-          <a
             href={websiteUrl}
             target="_blank"
             rel="noopener noreferrer"
             style={{ color: '#1e40af', textDecoration: 'underline' }}
           >
             {websiteUrl}
+          </a>
+          <a
+            href={githubUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: '#1e40af', textDecoration: 'underline' }}
+          >
+            {githubDisplay}
+          </a>
+          <a
+            href={linkedInUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: '#1e40af', textDecoration: 'underline' }}
+          >
+            {linkedInDisplay}
           </a>
         </div>
       </div>
