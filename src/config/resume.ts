@@ -1,7 +1,7 @@
 export const contactToEmail = 'nikhil@nikhilkgupta.uk'
 
 export const heroData = {
-  name: 'Nikhil K Gupta',
+  name: 'Nikhil K Guptaa',
   title: 'Senior Software Engineer',
   phone: '+44-7979 965 209',
   email: contactToEmail,
