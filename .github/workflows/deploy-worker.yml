@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -11,7 +12,27 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: production
     steps:
+      - name: Validate required secrets
+        env:
+          _RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          _CONTACT_TO_EMAIL: ${{ secrets.CONTACT_TO_EMAIL }}
+          _CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          _CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          _CLOUDFLARE_WORKER_NAME: ${{ secrets.CLOUDFLARE_WORKER_NAME }}
+        run: |
+          missing=()
+          [ -z "$_RESEND_API_KEY" ]          && missing+=("RESEND_API_KEY")
+          [ -z "$_CONTACT_TO_EMAIL" ]        && missing+=("CONTACT_TO_EMAIL")
+          [ -z "$_CLOUDFLARE_API_TOKEN" ]    && missing+=("CLOUDFLARE_API_TOKEN")
+          [ -z "$_CLOUDFLARE_ACCOUNT_ID" ]   && missing+=("CLOUDFLARE_ACCOUNT_ID")
+          [ -z "$_CLOUDFLARE_WORKER_NAME" ]  && missing+=("CLOUDFLARE_WORKER_NAME")
+          if [ ${#missing[@]} -gt 0 ]; then
+            echo "Missing required secrets: ${missing[*]}"
+            exit 1
+          fi
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -31,21 +52,8 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-          CONTACT_TO_EMAIL: ${{ secrets.CONTACT_TO_EMAIL }}
-        run: |
-          npx wrangler deploy --name "${{ secrets.CLOUDFLARE_WORKER_NAME }}" --compatibility-date 2024-12-01
-
-      - name: Validate required secrets
-        run: |
-          if [ -z "${{ secrets.RESEND_API_KEY }}" ]; then
-            echo "Missing RESEND_API_KEY in GitHub Secrets."
-            exit 1
-          fi
-          if [ -z "${{ secrets.CONTACT_TO_EMAIL }}" ]; then
-            echo "Missing CONTACT_TO_EMAIL in GitHub Secrets."
-            exit 1
-          fi
+          WORKER_NAME: ${{ secrets.CLOUDFLARE_WORKER_NAME }}
+        run: npx wrangler deploy --name "$WORKER_NAME" --compatibility-date 2024-12-01
 
       - name: Sync Worker secrets
         env:
@@ -53,6 +61,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           CONTACT_TO_EMAIL: ${{ secrets.CONTACT_TO_EMAIL }}
+          WORKER_NAME: ${{ secrets.CLOUDFLARE_WORKER_NAME }}
         run: |
           cat > .wrangler-secrets.json <<EOF
           {
@@ -60,5 +69,5 @@ jobs:
             "CONTACT_TO_EMAIL": "${CONTACT_TO_EMAIL}"
           }
           EOF
-          npx wrangler secret bulk .wrangler-secrets.json --name "${{ secrets.CLOUDFLARE_WORKER_NAME }}"
+          npx wrangler secret bulk .wrangler-secrets.json --name "$WORKER_NAME"
           rm .wrangler-secrets.json
